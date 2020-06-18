@@ -1,8 +1,9 @@
-package entities;
+package model.entities;
+
+import model.exceptions.DomainException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 public class Reservation {
@@ -17,6 +18,9 @@ public class Reservation {
     }
 
     public Reservation(Integer roomNumber, Date chekin, Date chekout) {
+        if (!chekout.after(chekin)){
+            throw new DomainException("check-out date must be afgter chek-int date");
+        }
         this.roomNumber = roomNumber;
         this.checkIn = chekin;
         this.checkOut = chekout;
@@ -43,18 +47,19 @@ public class Reservation {
         return TimeUnit.DAYS.convert(diff,TimeUnit.MILLISECONDS);
     }
 
-    public String updateDates( Date checkIn, Date checkOut){
+    public void updateDates( Date checkIn, Date checkOut) {
 
         Date now = new Date();
+
         if(checkIn.before(now) || checkOut.before(now)){
-            return "Reservation dates for update mus be future";
+            throw new DomainException("Reservation dates for update mus be future");
         }
         else if (!checkOut.after(checkIn)) {
-            return "check-out date must be afgter chek-int date";
+            throw new DomainException("check-out date must be afgter chek-int date");
         }
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        return null;
+
     }
 
     @Override
